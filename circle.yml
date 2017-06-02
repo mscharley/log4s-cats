@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: mscharley/ci-scala:1
+      - image: mscharley/ci-scala:2
     working_directory: /usr/src/app
     steps:
       - checkout
