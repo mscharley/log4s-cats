@@ -1,0 +1,28 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: mscharley/ci-scala:1
+    working_directory: /usr/src/app
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-log4s-cats-{{ checksum "build.sbt" }}
+      - restore_cache:
+          key: v1-scalafmt-{{checksum "bin/scalafmt" }}
+      - run: cat /dev/null | sbt update
+      - run: cat /dev/null | sbt test:compile
+      - run: cat /dev/null | sbt 'dependencyUpdates' 'dependencyUpdates' 'reload plugins' 'dependencyUpdates'
+      - run: bin/scalafmt --test
+      - run: cat /dev/null | sbt test:test
+      - save_cache:
+          key: v1-scalafmt-{{checksum "bin/scalafmt" }}
+          paths:
+            - bin/.cache
+      - save_cache:
+          key: v1-log4s-cats-{{ checksum "build.sbt" }}
+          paths:
+            - ~/.sbt
+            - ~/.ivy
+            - ~/.m2
